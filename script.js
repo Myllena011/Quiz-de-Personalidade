@@ -265,22 +265,16 @@ async function showResult() {
     characterDesc.innerText = profileData.desc;
     resultScreen.classList.add('active');
 
-    // Enviar para o backend
-    try {
-        const response = await fetch('http://localhost:3001/api/save-score', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: playerName || "Anônimo",
-                profile: profileData.name,
-                userId: currentUser ? currentUser.id : null
-            })
-        });
-        const data = await response.json();
-        console.log('Resultado salvo:', data);
-    } catch (error) {
-        console.error('Erro ao salvar resultado:', error);
-    }
+    // Salvar localmente
+    const localScores = JSON.parse(localStorage.getItem('quiz_scores') || '[]');
+    localScores.push({
+        name: playerName || "Anônimo",
+        profile: profileData.name,
+        userId: currentUser ? currentUser.id : null,
+        date: new Date().toISOString()
+    });
+    localStorage.setItem('quiz_scores', JSON.stringify(localScores.slice(-100))); // Guarda últimos 100
+    console.log('Resultado salvo localmente');
 }
 
 startBtn.addEventListener('click', () => {
@@ -293,56 +287,44 @@ startBtn.addEventListener('click', () => {
     gameState = 'QUESTION';
 });
 
-// Lógica de Login e Registro
-loginBtn.addEventListener('click', async () => {
+// Lógica de Login e Registro Local
+loginBtn.addEventListener('click', () => {
     const username = loginUserInput.value.trim();
     const password = loginPassInput.value.trim();
     if (!username || !password) return loginMsg.innerText = "Preencha todos os campos.";
 
-    try {
-        const response = await fetch('http://localhost:3001/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            currentUser = { id: data.userId, username: data.username };
-            playerNameInput.value = data.username;
-            displayUsername.innerText = data.username;
-            userBadge.classList.remove('hidden');
-            loginScreen.classList.remove('active');
-            startScreen.classList.add('active');
-            gameState = 'START';
-        } else {
-            loginMsg.innerText = data.error;
-        }
-    } catch (err) {
-        loginMsg.innerText = "Erro ao conectar ao servidor.";
+    const users = JSON.parse(localStorage.getItem('quiz_users') || '[]');
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
+        currentUser = user;
+        playerNameInput.value = user.username;
+        displayUsername.innerText = user.username;
+        userBadge.classList.remove('hidden');
+        loginScreen.classList.remove('active');
+        startScreen.classList.add('active');
+        gameState = 'START';
+    } else {
+        loginMsg.innerText = "Credenciais inválidas.";
     }
 });
 
-registerBtn.addEventListener('click', async () => {
+registerBtn.addEventListener('click', () => {
     const username = loginUserInput.value.trim();
     const password = loginPassInput.value.trim();
     if (!username || !password) return loginMsg.innerText = "Preencha todos os campos.";
 
-    try {
-        const response = await fetch('http://localhost:3001/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        const data = await response.json();
-        if (response.ok) {
-            loginMsg.innerText = "Registrado com sucesso! Agora clique em Entrar.";
-            loginMsg.style.color = "var(--primary-glow)";
-        } else {
-            loginMsg.innerText = data.error;
-        }
-    } catch (err) {
-        loginMsg.innerText = "Erro ao conectar ao servidor.";
+    const users = JSON.parse(localStorage.getItem('quiz_users') || '[]');
+    if (users.some(u => u.username === username)) {
+        return loginMsg.innerText = "Usuário já existe.";
     }
+
+    const newUser = { id: Date.now(), username, password };
+    users.push(newUser);
+    localStorage.setItem('quiz_users', JSON.stringify(users));
+
+    loginMsg.innerText = "Registrado com sucesso! Agora clique em Entrar.";
+    loginMsg.style.color = "var(--primary-glow)";
 });
 
 logoutBtn.addEventListener('click', () => {
