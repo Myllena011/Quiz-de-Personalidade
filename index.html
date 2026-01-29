@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Personalidade - Descubra seu Perfil</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="user-badge" class="user-badge hidden">
+        <span id="display-username"></span>
+        <button id="logout-btn" class="btn-logout">Sair</button>
+    </div>
+    <div class="cosmic-bg">
+        <div class="nebula"></div>
+    </div>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <div id="login-screen" class="screen active">
+                <h1 class="title">Área do <span>Viajante</span></h1>
+                <p class="subtitle">Faça login ou cadastre-se para iniciar sua jornada pelo cosmos.</p>
+                <div class="input-group">
+                    <input type="text" id="login-user" placeholder="Usuário" maxlength="20">
+                    <input type="password" id="login-pass" placeholder="Senha" maxlength="20" style="margin-top: 10px;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="login-btn" class="btn-primary" style="padding: 1rem 2rem;">Entrar</button>
+                    <button id="register-btn" class="btn-secondary">Cadastrar</button>
+                </div>
+                <p id="login-msg" style="margin-top: 1rem; color: var(--accent-glow); font-size: 0.9rem;"></p>
+            </div>
+
+            <div id="start-screen" class="screen">
+                <h1 class="title">Descubra seu <span>Perfil de Personalidade</span></h1>
+                <p class="subtitle">Responda a algumas perguntas e descubra qual arquétipo melhor descreve sua forma de
+                    agir no mundo.</p>
+                <div class="input-group">
+                    <input type="text" id="player-name" placeholder="Digite seu nome..." maxlength="20">
+                </div>
+                <button id="start-btn" class="btn-primary">Iniciar Quiz</button>
+            </div>
+
+            <div id="result-screen" class="screen">
+                <h2 class="result-title">Você é...</h2>
+                <div id="character-result" class="character-name"></div>
+                <p id="character-desc" class="character-desc"></p>
+                <button id="restart-btn" class="btn-secondary">Jogar Novamente</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
